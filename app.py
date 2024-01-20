@@ -2,6 +2,10 @@ from flask import Flask, request, jsonify
 import boto3
 import time
 from flask_cors import CORS
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
 CORS(app)
@@ -12,13 +16,12 @@ def process_image():
         # get the start time
         st = time.time()
 
-        # Replace these with your actual AWS credentials and region
-        # aws_access_key_id = 'YOUR_ACCESS_KEY'
-        # aws_secret_access_key = 'YOUR_SECRET_KEY'
-        # region_name = 'YOUR_REGION'
+        # Read AWS credentials from environment variables
+        aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+        aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 
-        client = boto3.client('textract', region_name='us-west-1', aws_access_key_id='AKIA4MTWLMMZLLJ22FQI',
-                              aws_secret_access_key='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')
+        client = boto3.client('textract', region_name='us-west-1', aws_access_key_id=aws_access_key_id,
+                              aws_secret_access_key=aws_secret_access_key)
 
         # Assuming the image is sent as a POST request
         img = request.files['image'].read()
@@ -41,4 +44,4 @@ def process_image():
         return jsonify({"error": str(e)})
 
 if __name__ == '__main__':
-    app.run(debug=False,host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0')
